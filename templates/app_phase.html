@@ -1,0 +1,6 @@
+<title>{% block title %}Please select a favourite artist from this list{% endblock %}</title>
+<ul>
+{% for artists in artists %}
+	<li><a href="/release_recommendation/{{artists}}">{{ artists }}</a></li>
+{% endfor %}
+</ul>
