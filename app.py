@@ -22,10 +22,7 @@ print(len(URIs))
 #print(str(URIs))
 #db = os.path.join(cur_dir, 'reviews.sqlite')
 
-global_iter = 0 # to keep a counter value on the  recommendations
-recommendation = [None] * 3 # instanstiate new array for recs of size 3, this stores MBID
-
-# ask for rating of each recommendation? or average post serving phase
+artists = []
 
 with open('data/distinct_artists', 'r') as f:
 	parsed = ast.parse(f.read()) # security risks?
@@ -66,11 +63,14 @@ def appPhase(stage):
 	#	name = request.form['sayhello']
 	#	return render_template('hello.html', name=name)
 	artists = od.keys()
+		
 	return render_template('app_phase.html', artists=artists, stage=stage)# form=form
 
 # View specific entry
 @app.route('/release_recommendation/<int:stage>/<string:selected_artist>')
 def release_recommendation(selected_artist, stage):
+	check = false
+	shift = 1
 	cur_uri = od[selected_artist] # query into artist dictionary, returns URI of corresponding artist release
 	print(cur_uri)
 	cur_index = URIs.index('spotify:album:' + cur_uri) + 1
@@ -84,10 +84,19 @@ def release_recommendation(selected_artist, stage):
 	if (rec_index == 5133):
 		rec_file = str([x[0] for x in reclist][1])
 		rec_index = int(rec_file.split('.txt')[0])
-	print(rec_index)
-	uri = URIs[rec_index-1].split('spotify:album:')[1] # - 1 as file indexes start at 1?
-		#print(uri)
-	stage = stage + 1
+	print(rec_index)	
+	if (URIs[rec_index-1].__contains__('spotify:album:')):
+		check = true
+		uri = URIs[rec_index-1].split('spotify:album:')[1] # - 1 as file indexes start at 1 - 95% on this
+	while (check==false): 
+		rec_file = str([x[0] for x in reclist][shift])
+		rec_index = int(rec_file.split('txt')[0])
+		if (URIs[rec_index-1].__contains__('spotify:album:')):
+			check=true
+		else: # shift along and try again
+			shift += 1
+
+	stage += 1
 	return render_template('release_recommendation.html', uri=uri, stage=stage)
 	
 

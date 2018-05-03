@@ -1,12 +1,19 @@
+<h3> Please listen to the previews of the release tracks and answer the questionnaire below. Then, click the button at the bottom to continue.</h3>
+<body>
 <iframe src='https://open.spotify.com/embed?uri=spotify:album:{{uri}}' width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 
 
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdi4WUljkAxilCMHiOxvTrr3d-8eH3-ifuZ-mrCEtj_Spf6yg/viewform?embedded=true" width="700" height="520" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+
 {% if (stage == 3) %}
 	<form action=/post_study>
-		<input type="submit" value="Next">
+		<input type="submit" value="Finish Study">
 	</form>
 {% else %}
 	<form action=/app_phase/{{stage}}>
     		<input type="submit" value="Next">
 	</form>
 {% endif %}
+
+
+</body>
