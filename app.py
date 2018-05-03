@@ -71,16 +71,20 @@ def appPhase():
 def release_recommendation(selected_artist):
 	cur_uri = od[selected_artist] # query into artist dictionary, returns URI of corresponding artist release
 	print(cur_uri)
-	cur_index = URIs.index('spotify:album:' + cur_uri) 
-	reclist = (d2v_model.docvecs.most_similar(cur_index)) #returns a list, first index is most similar
-	#print(reclist)
+	cur_index = URIs.index('spotify:album:' + cur_uri) + 1
+	print('curindex =' + str(cur_index))
+	reclist = (d2v_model.docvecs.most_similar(str(cur_index)+'.txt')) #returns a list, first index is most similar
+	print(reclist)
 	rec = [x[0] for x in reclist][0]
 	rec_file = str(rec)
 	#print(rec)
 	rec_index = int(rec_file.split('.txt')[0])
+	if (rec_index == 5133):
+		rec_file = str([x[0] for x in reclist][1])
+		rec_index = int(rec_file.split('.txt')[0])
 	print(rec_index)
-	uri = URIs[rec_index].split('spotify:album:')[1] # - 1 as file indexes start at 1
-	#print(uri)
+	uri = URIs[rec_index-1].split('spotify:album:')[1] # - 1 as file indexes start at 1?
+		#print(uri)
 	return render_template('release_recommendation.html', uri=uri)
 	
 
