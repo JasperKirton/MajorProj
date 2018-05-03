@@ -16,6 +16,8 @@ d2v_model = pickle.load(open(os.path.join(cur_dir, 'pkl_objects/model.pkl'), 'rb
 with open(os.path.join(cur_dir, 'data/serveIDs.txt'), 'r') as f:
 	URIs = [line.replace('\n', '') for line in f]
 
+stage = 0 # initialise our rec counter
+
 print(len(URIs))
 #print(str(URIs))
 #db = os.path.join(cur_dir, 'reviews.sqlite')
@@ -52,23 +54,23 @@ app = Flask(__name__)
 class HelloForm(Form):
 	sayhello = TextAreaField('',[validators.DataRequired()])
 
-@app.route('/')
-def index():
+@app.route('/<int:stage>')
+def index(stage):
 	#form = NextButton(request.form)
-	return render_template('pre_study.html')
+	return render_template('pre_study.html', stage=stage)
 
-@app.route('/app_phase') #methods=['POST'])
-def appPhase():
+@app.route('/app_phase/<int:stage>') #methods=['POST'])
+def appPhase(stage):
 	#form = HelloForm(request.form)
 	#if request.method == 'POST' and form.validate():
 	#	name = request.form['sayhello']
 	#	return render_template('hello.html', name=name)
 	artists = od.keys()
-	return render_template('app_phase.html', artists=artists)# form=form
+	return render_template('app_phase.html', artists=artists, stage=stage)# form=form
 
 # View specific entry
-@app.route('/release_recommendation/<string:selected_artist>')
-def release_recommendation(selected_artist):
+@app.route('/release_recommendation/<int:stage>/<string:selected_artist>')
+def release_recommendation(selected_artist, stage):
 	cur_uri = od[selected_artist] # query into artist dictionary, returns URI of corresponding artist release
 	print(cur_uri)
 	cur_index = URIs.index('spotify:album:' + cur_uri) + 1
@@ -85,7 +87,8 @@ def release_recommendation(selected_artist):
 	print(rec_index)
 	uri = URIs[rec_index-1].split('spotify:album:')[1] # - 1 as file indexes start at 1?
 		#print(uri)
-	return render_template('release_recommendation.html', uri=uri)
+	stage = stage + 1
+	return render_template('release_recommendation.html', uri=uri, stage=stage)
 	
 
 @app.route('/post_study')
