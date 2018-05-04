@@ -1,11 +1,7 @@
-head {
-	font-size: 3em;
-}
-
 body {
-	font-size: 1em;
+	font-size: 2em;
 }
 
-h1 {
-	font-size:1em;
+input[type=submit] {
+	width: 20em; height: 2em;
 }
