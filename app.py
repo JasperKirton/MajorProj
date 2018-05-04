@@ -69,7 +69,7 @@ def appPhase(stage):
 # View specific entry
 @app.route('/release_recommendation/<int:stage>/<string:selected_artist>')
 def release_recommendation(selected_artist, stage):
-	check = false
+	check = False
 	shift = 1
 	cur_uri = od[selected_artist] # query into artist dictionary, returns URI of corresponding artist release
 	print(cur_uri)
@@ -81,22 +81,25 @@ def release_recommendation(selected_artist, stage):
 	rec_file = str(rec)
 	#print(rec)
 	rec_index = int(rec_file.split('.txt')[0])
-	if (rec_index == 5133):
-		rec_file = str([x[0] for x in reclist][1])
-		rec_index = int(rec_file.split('.txt')[0])
-	print(rec_index)	
-	if (URIs[rec_index-1].__contains__('spotify:album:')):
-		check = true
-		uri = URIs[rec_index-1].split('spotify:album:')[1] # - 1 as file indexes start at 1 - 95% on this
-	while (check==false): 
+	if (URIs[rec_index-1].__contains__('spotify:album:') and rec_index != 5133): #if 5133 is first then stops it skipping to an unmapped uri
+		check = True
+	if (rec_index == 5133): # this rogue release has a vector space which throws off the cos sim
 		rec_file = str([x[0] for x in reclist][shift])
-		rec_index = int(rec_file.split('txt')[0])
+		rec_index = int(rec_file.split('.txt')[0])
+	while (check==False): 
+		rec_file = str([x[0] for x in reclist][shift])
+		rec_index = int(rec_file.split('.txt')[0])
+		if (rec_index == 5133): # this rogue review has a vector space which throws off the cos sim
+			rec_file = str([x[0] for x in reclist][shift+1])
+			rec_index = int(rec_file.split('.txt')[0])
 		if (URIs[rec_index-1].__contains__('spotify:album:')):
-			check=true
+			check=True
 		else: # shift along and try again
 			shift += 1
-
 	stage += 1
+	if (check==True): 
+		print(rec_index)	
+		uri = URIs[rec_index-1].split('spotify:album:')[1] # - 1 as file indexes start at 1 - 95% on this
 	return render_template('release_recommendation.html', uri=uri, stage=stage)
 	
 
