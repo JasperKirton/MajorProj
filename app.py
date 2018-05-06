@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request # Clean up needed
 from wtforms import Form, TextAreaField, validators
 import pickle
 import sqlite3
@@ -18,7 +18,7 @@ with open(os.path.join(cur_dir, 'data/serveIDs.txt'), 'r') as f:
 
 stage = 0 # initialise our rec counter
 
-print(len(URIs))
+print(len(URIs)) # confirm all URIs are loaded
 #print(str(URIs))
 #db = os.path.join(cur_dir, 'reviews.sqlite')
 
@@ -33,9 +33,6 @@ vals = (node.s for node in first_dict.values)
 od = OrderedDict(zip(keys, vals))
 
 
-def serve(currentRelease):
-	#currRec = review with least distance; highest sim
-	recommendation[n] = currentRec
 
 
 def sqlite_entry(path, document, y):
