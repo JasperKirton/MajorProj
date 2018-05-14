@@ -12,7 +12,7 @@ from collections import OrderedDict
 
 ####### Preparing the d2v model
 cur_dir = os.path.dirname(__file__)
-d2v_model = pickle.load(open(os.path.join(cur_dir, 'pkl_objects/model.pkl'), 'rb'))
+d2v_model = pickle.load(open(os.path.join(cur_dir, 'pkl_objects/model2.pkl'), 'rb'))
 with open(os.path.join(cur_dir, 'data/serveIDs.txt'), 'r') as f:
 	URIs = [line.replace('\n', '') for line in f]
 
@@ -31,36 +31,17 @@ first_dict = next(node for node in ast.walk(parsed) if isinstance(node, ast.Dict
 keys = (node.s for node in first_dict.keys)
 vals = (node.s for node in first_dict.values)
 od = OrderedDict(zip(keys, vals))
-
-
-
-
-def sqlite_entry(path, document, y):
-	conn = sqlite2.connect(path)
-	c = conn.cursor()
-	c.execute("INSERT INTO recommendations_db (recommendation[n]))"\
-	" VALUES (?, ?, DATETIME('now'))", (document, y)) #change date time to a better suited primary key
-	conn.commit()
-	conn.close()
 	
 
 app = Flask(__name__)
-class HelloForm(Form):
-	sayhello = TextAreaField('',[validators.DataRequired()])
 
 @app.route('/<int:stage>')
 def index(stage):
-	#form = NextButton(request.form)
-	return render_template('pre_study.html', stage=stage)
+	return render_template('pre_study.html', stage=stage) # do i need to pass in stage here?
 
 @app.route('/app_phase/<int:stage>') #methods=['POST'])
 def appPhase(stage):
-	#form = HelloForm(request.form)
-	#if request.method == 'POST' and form.validate():
-	#	name = request.form['sayhello']
-	#	return render_template('hello.html', name=name)
-	artists = od.keys()
-		
+	artists = od.keys()		
 	return render_template('app_phase.html', artists=artists, stage=stage)# form=form
 
 # View specific entry
@@ -78,17 +59,11 @@ def release_recommendation(selected_artist, stage):
 	rec_file = str(rec)
 	#print(rec)
 	rec_index = int(rec_file.split('.txt')[0])
-	if (URIs[rec_index-1].__contains__('spotify:album:') and rec_index != 5133): #if 5133 is first then stops it skipping to an unmapped uri
+	if (URIs[rec_index-1].__contains__('spotify:album:')):
 		check = True
-	if (rec_index == 5133): # this rogue release has a vector space which throws off the cos sim
-		rec_file = str([x[0] for x in reclist][shift])
-		rec_index = int(rec_file.split('.txt')[0])
 	while (check==False): 
 		rec_file = str([x[0] for x in reclist][shift])
 		rec_index = int(rec_file.split('.txt')[0])
-		if (rec_index == 5133): # this rogue review has a vector space which throws off the cos sim
-			rec_file = str([x[0] for x in reclist][shift+1])
-			rec_index = int(rec_file.split('.txt')[0])
 		if (URIs[rec_index-1].__contains__('spotify:album:')):
 			check=True
 		else: # shift along and try again
@@ -96,7 +71,7 @@ def release_recommendation(selected_artist, stage):
 	stage += 1
 	if (check==True): 
 		print(rec_index)	
-		uri = URIs[rec_index-1].split('spotify:album:')[1] # - 1 as file indexes start at 1 - 95% on this
+		uri = URIs[rec_index-1].split('spotify:album:')[1] # - 1 as file indexes start at 1
 	return render_template('release_recommendation.html', uri=uri, stage=stage)
 	
 
